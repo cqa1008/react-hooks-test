@@ -71,3 +71,25 @@ export const validateFullName = (value) => {
   if (words.some((w) => w.length < 2)) return 'Mỗi từ trong họ tên cần ít nhất 2 ký tự';
   return '';
 };
+
+/**
+ * Giả lập kiểm tra username bất đồng bộ trên server (API call).
+ * Nếu các rule sync cơ bản đã lỗi thì trả về ngay;
+ * nếu hợp lệ, delay 600ms giả lập mạng và kiểm tra danh sách tài khoản đã tồn tại.
+ */
+export const validateUsernameAsync = (value) => {
+  const syncError = validateUsername(value);
+  if (syncError) return syncError;
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const taken = ['admin', 'root', 'test'];
+      if (taken.includes(value.toLowerCase().trim())) {
+        resolve(`Tài khoản "${value}" đã có người sử dụng`);
+      } else {
+        resolve('');
+      }
+    }, 600);
+  });
+};
+

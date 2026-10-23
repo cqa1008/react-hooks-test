@@ -2,25 +2,19 @@ import { useState } from 'react';
 import {
   Box,
   TextField,
-  IconButton,
   List,
-  ListItem,
-  ListItemText,
   Paper,
   Typography,
   Button,
   Chip,
-  Tooltip,
   InputAdornment,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SaveIcon from '@mui/icons-material/Save';
-import CloseIcon from '@mui/icons-material/Close';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import TodoItem from './TodoItem';
 
 /**
  * TodoList — Q2: Todo List với useState & Giao diện tối ưu MUI
@@ -122,7 +116,7 @@ export default function TodoList() {
               width: 38,
               height: 38,
               borderRadius: 2,
-              bgcolor: 'primary.50',
+              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
               color: 'primary.main',
             }}
           >
@@ -161,11 +155,12 @@ export default function TodoList() {
             '& .MuiOutlinedInput-root': {
               borderRadius: 2,
               transition: 'all 0.2s',
-              '&:hover': {
+              '&:hover .MuiOutlinedInput-notchedOutline': {
                 borderColor: 'primary.main',
               },
-              '&.Mui-focused': {
-                boxShadow: (theme) => `0 0 0 3px ${theme.palette.primary.main}1F`,
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'primary.main',
+                borderWidth: '2px',
               },
             },
           }}
@@ -227,140 +222,19 @@ export default function TodoList() {
         <List disablePadding sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {/* key={todo.id} — dùng id ổn định, không dùng index */}
           {todos.map((todo, index) => (
-            <ListItem
+            <TodoItem
               key={todo.id}
-              disablePadding
-              sx={{
-                border: '1px solid',
-                borderColor: editingId === todo.id ? 'primary.main' : 'divider',
-                borderRadius: 2,
-                px: 2,
-                py: 1,
-                bgcolor: editingId === todo.id ? '#f5f3ff' : '#ffffff',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  borderColor: editingId === todo.id ? 'primary.main' : 'primary.light',
-                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)',
-                },
-              }}
-              secondaryAction={
-                editingId === todo.id ? (
-                  // Đang sửa: hiện Save + Cancel kèm Tooltip
-                  <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    <Tooltip title="Lưu (Enter)" arrow>
-                      <span>
-                        <IconButton
-                          edge="end"
-                          size="small"
-                          color="primary"
-                          onClick={() => handleSave(todo.id)}
-                          disabled={!editText.trim()}
-                          aria-label="Lưu"
-                          sx={{
-                            bgcolor: 'primary.50',
-                            '&:hover': { bgcolor: 'primary.100' },
-                          }}
-                        >
-                          <SaveIcon fontSize="small" />
-                        </IconButton>
-                      </span>
-                    </Tooltip>
-                    <Tooltip title="Hủy (Escape)" arrow>
-                      <IconButton
-                        edge="end"
-                        size="small"
-                        onClick={handleCancel}
-                        aria-label="Hủy"
-                        sx={{
-                          ml: 0.5,
-                          '&:hover': { bgcolor: 'action.hover' },
-                        }}
-                      >
-                        <CloseIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                ) : (
-                  // Bình thường: hiện Edit + Delete kèm Tooltip
-                  <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    <Tooltip title="Chỉnh sửa" arrow>
-                      <IconButton
-                        edge="end"
-                        size="small"
-                        onClick={() => handleStartEdit(todo)}
-                        aria-label="Sửa"
-                        sx={{
-                          color: 'text.secondary',
-                          '&:hover': { color: 'primary.main', bgcolor: 'primary.50' },
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Xóa" arrow>
-                      <IconButton
-                        edge="end"
-                        size="small"
-                        color="error"
-                        onClick={() => handleDelete(todo.id)}
-                        aria-label="Xóa"
-                        sx={{
-                          '&:hover': { bgcolor: 'error.50' },
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                )
-              }
-            >
-              {editingId === todo.id ? (
-                // Chế độ sửa: TextField nổi bật với autofocus và helperText
-                <TextField
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                  onKeyDown={(e) => handleEditKeyDown(e, todo.id)}
-                  size="small"
-                  fullWidth
-                  autoFocus
-                  sx={{
-                    mr: 11,
-                    '& .MuiOutlinedInput-root': {
-                      bgcolor: '#ffffff',
-                      borderRadius: 1.5,
-                    },
-                  }}
-                  helperText={!editText.trim() ? 'Nội dung không được để trống' : 'Nhấn Enter để lưu, Escape để hủy'}
-                  error={!editText.trim()}
-                />
-              ) : (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pr: 9, py: 0.5, width: '100%' }}>
-                  <Chip
-                    label={`#${index + 1}`}
-                    size="small"
-                    sx={{
-                      height: 22,
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      bgcolor: 'grey.100',
-                      color: 'text.secondary',
-                      borderRadius: 1,
-                    }}
-                  />
-                  <ListItemText
-                    primary={todo.text}
-                    primaryTypographyProps={{
-                      sx: {
-                        fontWeight: 500,
-                        color: 'text.primary',
-                        wordBreak: 'break-word',
-                      },
-                    }}
-                  />
-                </Box>
-              )}
-            </ListItem>
+              todo={todo}
+              index={index}
+              isEditing={editingId === todo.id}
+              editText={editText}
+              onStartEdit={handleStartEdit}
+              onSave={handleSave}
+              onCancel={handleCancel}
+              onDelete={handleDelete}
+              onEditTextChange={setEditText}
+              onEditKeyDown={handleEditKeyDown}
+            />
           ))}
         </List>
       )}
