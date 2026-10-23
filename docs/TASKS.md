@@ -6,3 +6,6 @@
 - [x] Ghép vào App.jsx
 - [x] npm run build không lỗi
 - [x] Chạy 43 test cases — 43/43 PASS (1 fix: validateEmail khoảng trắng)
+- [x] Mở rộng Q1: Bộ 7 validator (`src/utils/validators.js`) + Password toggle + Async username check + useCallback([password]) cho Confirm Password
+- [x] Chạy 45 test cases mở rộng (#44-88) — 45/45 PASS
+- [x] Build và Lint kiểm tra lại toàn bộ: 0 errors, 0 warnings

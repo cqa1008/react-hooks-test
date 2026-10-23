@@ -1,51 +1,125 @@
 import { useState, useEffect } from 'react';
-import { TextField } from '@mui/material';
+import {
+  TextField,
+  IconButton,
+  InputAdornment,
+  CircularProgress,
+} from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 /**
- * ValidatedInput — Q1: Form Input Validation với useEffect
+ * ValidatedInput — Q1 mở rộng
  *
  * Props:
- *   - validate: (value: string) => string  — trả về chuỗi lỗi hoặc ""
- *   - label: string
- *   - placeholder: string
+ *   - validate    : (value) => string | Promise<string>  — hàm validate sync hoặc async
+ *   - label       : string
+ *   - type        : string  — 'text' | 'password' | 'number' | ...
+ *   - placeholder : string
  *   - initialValue: string
+ *   - onChange    : (value: string) => void  — callback tùy chọn (vd: để App theo dõi password)
+ *   - debounceMs  : number  — trễ validate (ms), 0 = ngay lập tức
  *
- * Quan trọng: prop `validate` phải có tham chiếu ổn định (định nghĩa ngoài
- * component cha hoặc bọc bằng useCallback), nếu không mỗi render của cha sẽ
- * tạo ra một hàm mới → useEffect chạy lại vô tận.
+ * Lưu ý tham chiếu ổn định:
+ *   - validate thuần → định nghĩa ngoài component (module level)
+ *   - validate phụ thuộc state → dùng useCallback ở component cha
  */
 export default function ValidatedInput({
   validate,
   label = 'Input',
+  type = 'text',
   placeholder = '',
   initialValue = '',
+  onChange,
+  debounceMs = 0,
 }) {
-  // value: giá trị người dùng đang gõ
   const [value, setValue] = useState(initialValue);
-
-  // error: kết quả validate, chuỗi rỗng = hợp lệ
   const [error, setError] = useState('');
-
-  // touched: true sau khi người dùng gõ lần đầu
-  // → tránh hiện lỗi ngay khi component mới mount
   const [touched, setTouched] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [checking, setChecking] = useState(false);
 
-  // useEffect chạy mỗi khi value hoặc validate thay đổi,
-  // mô phỏng componentDidUpdate cho việc validate.
+  // useEffect validate — chạy mỗi khi value, validate hoặc debounceMs thay đổi.
   //
-  // Dependency array [value, validate]:
-  //   - value  : cần re-validate mỗi khi giá trị thay đổi
-  //   - validate: nằm trong array để đảm bảo đầy đủ deps theo rules;
-  //               nếu `validate` không ổn định (tạo mới mỗi render) sẽ
-  //               gây vòng lặp → cha phải đảm bảo tham chiếu ổn định.
+  // Dependency array [value, validate, debounceMs]:
+  //   - value: giá trị input cần validate mỗi khi người dùng nhập
+  //   - validate: hàm kiểm tra (sync hoặc async trả về Promise); có thể cập nhật
+  //               khi state cha đổi (vd: useCallback([password]))
+  //   - debounceMs: độ trễ debounce tùy chọn
+  //
+  // Cơ chế hoạt động & Cleanup:
+  //   - Flag `cancelled`: chống race condition cho async validate (nếu Promise cũ về sau
+  //     Promise mới, kết quả cũ sẽ bị hủy).
+  //   - Nếu có debounceMs > 0: dùng setTimeout hoãn chạy validate, clearTimeout khi value đổi liên tiếp.
   useEffect(() => {
-    setError(validate(value));
-  }, [value, validate]);
+    let cancelled = false;
+
+    const executeValidation = () => {
+      const result = validate(value);
+
+      if (result instanceof Promise) {
+        setChecking(true);
+        result.then((err) => {
+          if (!cancelled) {
+            setError(err || '');
+            setChecking(false);
+          }
+        });
+      } else {
+        setChecking(false);
+        setError(result || '');
+      }
+    };
+
+    if (debounceMs > 0) {
+      const timer = setTimeout(executeValidation, debounceMs);
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
+    }
+
+    executeValidation();
+    return () => {
+      cancelled = true;
+    };
+  }, [value, validate, debounceMs]);
 
   const handleChange = (e) => {
-    if (!touched) setTouched(true); // đánh dấu đã tương tác
+    if (!touched) setTouched(true);
     setValue(e.target.value);
+    onChange?.(e.target.value); // optional: cha theo dõi giá trị (vd: password → confirm)
   };
+
+  // endAdornment: nút show/hide cho password, hoặc spinner cho async checking
+  const endAdornment = (() => {
+    if (type === 'password') {
+      return (
+        <InputAdornment position="end">
+          <IconButton
+            onClick={() => setShowPassword((prev) => !prev)}
+            edge="end"
+            size="small"
+            aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+          >
+            {showPassword ? (
+              <VisibilityOff fontSize="small" />
+            ) : (
+              <Visibility fontSize="small" />
+            )}
+          </IconButton>
+        </InputAdornment>
+      );
+    }
+    if (checking) {
+      return (
+        <InputAdornment position="end">
+          <CircularProgress size={18} />
+        </InputAdornment>
+      );
+    }
+    return null;
+  })();
 
   return (
     <TextField
@@ -53,11 +127,14 @@ export default function ValidatedInput({
       placeholder={placeholder}
       value={value}
       onChange={handleChange}
-      // Chỉ hiện trạng thái lỗi sau khi người dùng đã gõ
+      type={type === 'password' ? (showPassword ? 'text' : 'password') : type}
       error={touched && Boolean(error)}
       helperText={touched ? (error || ' ') : ' '}
       fullWidth
       variant="outlined"
+      slotProps={{
+        input: { endAdornment },
+      }}
     />
   );
 }

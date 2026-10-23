@@ -13,3 +13,11 @@ Create a ValidatedInput component that validates user input and shows an error m
 - Chỉ hiện lỗi sau khi người dùng đã gõ (touched).
 - UI: MUI TextField với error={touched && Boolean(error)} và helperText.
 - Demo trong App.jsx: validate email hoặc tối thiểu 3 ký tự.
+
+## Giải pháp mở rộng
+- Một component tái sử dụng cho 8 trường hợp: Email, Password, Confirm Password, Username (async), Phone VN, Tuổi, URL, Họ và tên.
+- Password: toggle ẩn/hiện mật khẩu bằng IconButton (Visibility/VisibilityOff).
+- Confirm Password: validate bằng useCallback([password]) để chứng minh tầm quan trọng của dependency array.
+- Username: có kiểm tra async giả lập (admin, root, test = đã tồn tại), dùng cleanup flag chống race condition và hiển thị CircularProgress khi đang kiểm tra.
+- Hỗ trợ debounceMs: hoãn validate cho các trường hợp gõ nhanh hoặc async call.
+- Không dùng thư viện form, không dùng validator có sẵn của HTML/MUI.

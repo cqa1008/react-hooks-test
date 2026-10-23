@@ -87,6 +87,80 @@
 
 ---
 
+## Q1 Mở rộng: Bộ Validator (`src/utils/validators.js` — #44-88)
+> Chạy bằng Node script tạm (đã kiểm tra và xóa sau khi hoàn tất).
+
+### A. `validatePassword` (#44-50)
+| # | Input | Kỳ vọng | Kết quả |
+|---|---|---|---|
+| 44 | `''` (rỗng) | Lỗi: Mật khẩu không được để trống | ✅ PASS |
+| 45 | `'Aa1!'` (< 8 ký tự) | Lỗi: Mật khẩu tối thiểu 8 ký tự | ✅ PASS |
+| 46 | `'abcdef1!'` (thiếu chữ hoa) | Lỗi: Mật khẩu cần ít nhất 1 chữ hoa | ✅ PASS |
+| 47 | `'ABCDEF1!'` (thiếu chữ thường) | Lỗi: Mật khẩu cần ít nhất 1 chữ thường | ✅ PASS |
+| 48 | `'Abcdefg!'` (thiếu số) | Lỗi: Mật khẩu cần ít nhất 1 chữ số | ✅ PASS |
+| 49 | `'Abcdef12'` (thiếu ký tự đặc biệt) | Lỗi: Mật khẩu cần ít nhất 1 ký tự đặc biệt | ✅ PASS |
+| 50 | `'StrongP@ss1'` (đủ điều kiện) | Hợp lệ | ✅ PASS |
+
+### B. `validateUsername` (#51-58)
+| # | Input | Kỳ vọng | Kết quả |
+|---|---|---|---|
+| 51 | `''` (rỗng) | Lỗi: Username không được để trống | ✅ PASS |
+| 52 | `'   '` (chỉ khoảng trắng) | Lỗi: Username không được để trống | ✅ PASS |
+| 53 | `'ab'` (< 3 ký tự) | Lỗi: Username tối thiểu 3 ký tự | ✅ PASS |
+| 54 | 21 ký tự (`'a'*21`) | Lỗi: Username tối đa 20 ký tự | ✅ PASS |
+| 55 | `'user@name'` (ký tự đặc biệt) | Lỗi: Username chỉ dùng chữ, số, gạch dưới | ✅ PASS |
+| 56 | `'abc'` (biên 3 ký tự) | Hợp lệ | ✅ PASS |
+| 57 | 20 ký tự (`'a'*20` — biên 20) | Hợp lệ | ✅ PASS |
+| 58 | `'john_doe_99'` (chữ, số, gạch dưới) | Hợp lệ | ✅ PASS |
+
+### C. `validatePhoneVN` (#59-68)
+| # | Input | Kỳ vọng | Kết quả |
+|---|---|---|---|
+| 59 | `''` (rỗng) | Lỗi: Số điện thoại không được để trống | ✅ PASS |
+| 60 | `'   '` (khoảng trắng) | Lỗi: Số điện thoại không được để trống | ✅ PASS |
+| 61 | `'0212345678'` (đầu 02 máy bàn) | Lỗi: Số điện thoại VN không hợp lệ | ✅ PASS |
+| 62 | `'091234567'` (9 chữ số) | Lỗi: Số điện thoại VN không hợp lệ | ✅ PASS |
+| 63 | `'09123456789'` (11 chữ số) | Lỗi: Số điện thoại VN không hợp lệ | ✅ PASS |
+| 64 | `'091234567a'` (chứa chữ) | Lỗi: Số điện thoại VN không hợp lệ | ✅ PASS |
+| 65 | `'0912345678'` (hợp lệ đầu 09) | Hợp lệ | ✅ PASS |
+| 66 | `'0381234567'` (hợp lệ đầu 03) | Hợp lệ | ✅ PASS |
+| 67 | `'+84912345678'` (định dạng quốc tế +84) | Hợp lệ | ✅ PASS |
+| 68 | `'0912 345 678'` (có khoảng trắng phân cách) | Hợp lệ (đã clean) | ✅ PASS |
+
+### D. `validateAge` (#69-77)
+| # | Input | Kỳ vọng | Kết quả |
+|---|---|---|---|
+| 69 | `''` (rỗng) | Lỗi: Tuổi không được để trống | ✅ PASS |
+| 70 | `'abc'` (không phải số) | Lỗi: Tuổi phải là số nguyên | ✅ PASS |
+| 71 | `'25.5'` (số thập phân) | Lỗi: Tuổi phải là số nguyên | ✅ PASS |
+| 72 | `'0'` (< 1) | Lỗi: Tuổi phải từ 1 đến 150 | ✅ PASS |
+| 73 | `'-5'` (số âm) | Lỗi: Tuổi phải từ 1 đến 150 | ✅ PASS |
+| 74 | `'151'` (> 150) | Lỗi: Tuổi phải từ 1 đến 150 | ✅ PASS |
+| 75 | `'1'` (biên dưới 1) | Hợp lệ | ✅ PASS |
+| 76 | `'150'` (biên trên 150) | Hợp lệ | ✅ PASS |
+| 77 | `'25'` (trong khoảng hợp lệ) | Hợp lệ | ✅ PASS |
+
+### E. `validateUrl` (#78-83)
+| # | Input | Kỳ vọng | Kết quả |
+|---|---|---|---|
+| 78 | `''` (rỗng) | Lỗi: Website không được để trống | ✅ PASS |
+| 79 | `'example.com'` (thiếu protocol) | Lỗi: Website không hợp lệ | ✅ PASS |
+| 80 | `'ftp://example.com'` (giao thức không được hỗ trợ) | Lỗi: Website phải bắt đầu bằng http:// hoặc https:// | ✅ PASS |
+| 81 | `'http://'` (sai cú pháp) | Lỗi: Website không hợp lệ | ✅ PASS |
+| 82 | `'http://example.com'` (hợp lệ http) | Hợp lệ | ✅ PASS |
+| 83 | `'https://sub.domain.vn/path?id=123#sec'` | Hợp lệ | ✅ PASS |
+
+### F. `validateFullName` (#84-88)
+| # | Input | Kỳ vọng | Kết quả |
+|---|---|---|---|
+| 84 | `''` (rỗng) | Lỗi: Họ tên không được để trống | ✅ PASS |
+| 85 | `'Nguyen'` (1 từ) | Lỗi: Họ tên cần ít nhất 2 từ | ✅ PASS |
+| 86 | `'A Nguyen'` (có từ < 2 ký tự) | Lỗi: Mỗi từ trong họ tên cần ít nhất 2 ký tự | ✅ PASS |
+| 87 | `'Le An'` (2 từ hợp lệ) | Hợp lệ | ✅ PASS |
+| 88 | `'  Nguyen   Van  An  '` (3 từ, nhiều spaces) | Hợp lệ (đã clean) | ✅ PASS |
+
+---
+
 ## Ghi chú
 
 ### #42 — lint warning `set-state-in-effect` (Q1)
@@ -102,3 +176,4 @@ Trong thực tế production, nên derive `error` trực tiếp trong render tha
 | Bug | Nguyên nhân | Sửa |
 |---|---|---|
 | #2 FAIL: `' '` → sai message | `!value` không bắt string chỉ khoảng trắng | Đổi thành `!value.trim()` trong `validateEmail` |
+
