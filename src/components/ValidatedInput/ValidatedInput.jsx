@@ -7,9 +7,10 @@ import {
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 
 /**
- * ValidatedInput — Q1 mở rộng
+ * ValidatedInput — Q1 mở rộng & tối ưu giao diện MUI
  *
  * Props:
  *   - validate    : (value) => string | Promise<string>  — hàm validate sync hoặc async
@@ -19,6 +20,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
  *   - initialValue: string
  *   - onChange    : (value: string) => void  — callback tùy chọn (vd: để App theo dõi password)
  *   - debounceMs  : number  — trễ validate (ms), 0 = ngay lập tức
+ *   - startIcon   : ReactNode — icon hiển thị ở đầu ô nhập
  *
  * Lưu ý tham chiếu ổn định:
  *   - validate thuần → định nghĩa ngoài component (module level)
@@ -32,6 +34,7 @@ export default function ValidatedInput({
   initialValue = '',
   onChange,
   debounceMs = 0,
+  startIcon = null,
 }) {
   const [value, setValue] = useState(initialValue);
   const [error, setError] = useState('');
@@ -91,7 +94,9 @@ export default function ValidatedInput({
     onChange?.(e.target.value); // optional: cha theo dõi giá trị (vd: password → confirm)
   };
 
-  // endAdornment: nút show/hide cho password, hoặc spinner cho async checking
+  const isSuccess = touched && !error && Boolean(value) && !checking;
+
+  // endAdornment: nút show/hide cho password, spinner cho async checking, hoặc icon tick xanh khi hợp lệ
   const endAdornment = (() => {
     if (type === 'password') {
       return (
@@ -101,6 +106,10 @@ export default function ValidatedInput({
             edge="end"
             size="small"
             aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+            sx={{
+              color: isSuccess ? 'success.main' : 'text.secondary',
+              transition: 'color 0.2s',
+            }}
           >
             {showPassword ? (
               <VisibilityOff fontSize="small" />
@@ -114,7 +123,14 @@ export default function ValidatedInput({
     if (checking) {
       return (
         <InputAdornment position="end">
-          <CircularProgress size={18} />
+          <CircularProgress size={18} thickness={4} color="primary" />
+        </InputAdornment>
+      );
+    }
+    if (isSuccess) {
+      return (
+        <InputAdornment position="end">
+          <CheckCircleOutlinedIcon color="success" fontSize="small" />
         </InputAdornment>
       );
     }
@@ -132,8 +148,35 @@ export default function ValidatedInput({
       helperText={touched ? (error || ' ') : ' '}
       fullWidth
       variant="outlined"
+      sx={{
+        '& .MuiOutlinedInput-root': {
+          borderRadius: 2,
+          backgroundColor: '#ffffff',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            borderColor: 'primary.main',
+          },
+          '&.Mui-focused': {
+            boxShadow: (theme) => `0 0 0 3px ${theme.palette.primary.main}1F`,
+          },
+        },
+        '& .MuiFormHelperText-root': {
+          minHeight: '20px',
+          fontSize: '0.775rem',
+          fontWeight: 500,
+          mx: 0.5,
+          mt: 0.5,
+        },
+      }}
       slotProps={{
-        input: { endAdornment },
+        input: {
+          startAdornment: startIcon ? (
+            <InputAdornment position="start" sx={{ color: 'text.secondary', mr: 0.5 }}>
+              {startIcon}
+            </InputAdornment>
+          ) : null,
+          endAdornment,
+        },
       }}
     />
   );

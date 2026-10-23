@@ -1,12 +1,27 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   Container,
   Typography,
-  Divider,
   Box,
   Paper,
   Stack,
+  Chip,
+  ThemeProvider,
+  createTheme,
+  CssBaseline,
+  Divider,
 } from '@mui/material';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
+import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined';
+import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
+import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
+import VerifiedUserOutlinedIcon from '@mui/icons-material/VerifiedUserOutlined';
+import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
+
 import ValidatedInput from './components/ValidatedInput/ValidatedInput';
 import TodoList from './components/TodoList/TodoList';
 import {
@@ -41,6 +56,47 @@ const validateUsernameAsync = (value) => {
 };
 
 function App() {
+  // Theme tùy biến hiện đại, tinh gọn với MUI
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: 'light',
+          primary: {
+            main: '#4f46e5', // Indigo hiện đại
+            light: '#6366f1',
+            dark: '#4338ca',
+          },
+          secondary: {
+            main: '#0ea5e9', // Sky blue
+          },
+          background: {
+            default: '#f8fafc',
+            paper: '#ffffff',
+          },
+          text: {
+            primary: '#0f172a',
+            secondary: '#64748b',
+          },
+          divider: '#e2e8f0',
+        },
+        typography: {
+          fontFamily: '"Plus Jakarta Sans", "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+          h4: {
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
+          },
+          h6: {
+            fontWeight: 700,
+          },
+        },
+        shape: {
+          borderRadius: 12,
+        },
+      }),
+    []
+  );
+
   // State lưu giá trị password của ô Password để dùng so sánh trong Confirm Password
   const [password, setPassword] = useState('');
 
@@ -66,96 +122,241 @@ function App() {
   );
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      {/* Section Q1: Form Validation với useEffect */}
-      <Box sx={{ mb: 5 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
-          Q1: Form Input Validation với useEffect()
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Trình diễn 8 kịch bản validate bằng <code>useEffect</code>, quản lý dependency array,
-          debounce, async validation và show/hide password:
-        </Typography>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
 
-        <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
-          <Stack spacing={2.5}>
-            {/* 1. Email */}
-            <ValidatedInput
-              validate={validateEmail}
-              label="1. Email"
-              placeholder="nhap.email@example.com"
+      {/* Hero Header Banner */}
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
+          color: '#ffffff',
+          py: { xs: 4, md: 5 },
+          px: 2,
+          mb: 4,
+          boxShadow: '0 10px 25px -5px rgba(49, 46, 129, 0.3)',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
+            <Chip
+              label="React 19"
+              size="small"
+              sx={{ bgcolor: 'rgba(255, 255, 255, 0.15)', color: '#fff', fontWeight: 600 }}
             />
+            <Chip
+              label="Vite"
+              size="small"
+              sx={{ bgcolor: 'rgba(255, 255, 255, 0.15)', color: '#fff', fontWeight: 600 }}
+            />
+            <Chip
+              label="MUI Material"
+              size="small"
+              sx={{ bgcolor: 'rgba(255, 255, 255, 0.15)', color: '#fff', fontWeight: 600 }}
+            />
+            <Chip
+              label="Pure Hooks: useState & useEffect"
+              size="small"
+              sx={{ bgcolor: '#10b981', color: '#fff', fontWeight: 600 }}
+            />
+          </Box>
 
-            {/* 2. Password */}
-            <ValidatedInput
-              type="password"
-              validate={validatePassword}
-              label="2. Mật khẩu"
-              placeholder="Tối thiểu 8 ký tự, có hoa, thường, số, ký tự đặc biệt"
-              onChange={setPassword}
-            />
-
-            {/* 3. Confirm Password (phụ thuộc state password qua useCallback) */}
-            <ValidatedInput
-              type="password"
-              validate={validateConfirmPassword}
-              label="3. Xác nhận mật khẩu"
-              placeholder="Nhập lại mật khẩu giống bên trên"
-            />
-
-            {/* 4. Username (async check + debounce 500ms) */}
-            <ValidatedInput
-              validate={validateUsernameAsync}
-              label="4. Tên đăng nhập (Async check + Debounce)"
-              placeholder="Thử nhập: admin, root, test để xem báo trùng"
-              debounceMs={500}
-            />
-
-            {/* 5. Số điện thoại VN */}
-            <ValidatedInput
-              validate={validatePhoneVN}
-              label="5. Số điện thoại VN"
-              placeholder="VD: 0912345678 hoặc +84912345678"
-            />
-
-            {/* 6. Tuổi */}
-            <ValidatedInput
-              type="number"
-              validate={validateAge}
-              label="6. Tuổi"
-              placeholder="Số nguyên từ 1 đến 150"
-            />
-
-            {/* 7. Website URL */}
-            <ValidatedInput
-              validate={validateUrl}
-              label="7. Website / URL"
-              placeholder="https://example.com"
-            />
-
-            {/* 8. Họ và tên */}
-            <ValidatedInput
-              validate={validateFullName}
-              label="8. Họ và tên"
-              placeholder="VD: Nguyễn Văn A (tối thiểu 2 từ)"
-            />
-          </Stack>
-        </Paper>
+          <Typography variant="h4" component="h1" sx={{ color: '#fff', mb: 1 }}>
+            React Hooks Validation & State Lab
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#cbd5e1', maxWidth: 780, fontSize: '1rem' }}>
+            Khám phá cơ chế thực thi của <code>useEffect</code> (dependency array, cleanup race condition),
+            <code>useCallback</code> chống stale closure, và <code>useState</code> functional updates.
+          </Typography>
+        </Container>
       </Box>
 
-      <Divider sx={{ my: 4 }} />
+      {/* Main Container */}
+      <Container maxWidth="lg" sx={{ pb: 8 }}>
+        {/* Section Q1: Form Validation với useEffect */}
+        <Box sx={{ mb: 6 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              mb: 2.5,
+              flexWrap: 'wrap',
+              gap: 1,
+            }}
+          >
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, mb: 0.5 }}>
+                <VerifiedUserOutlinedIcon color="primary" sx={{ fontSize: 30 }} />
+                <Typography variant="h5" component="h2" sx={{ fontWeight: 800 }}>
+                  Q1: Form Input Validation với useEffect()
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary">
+                8 kịch bản validate độc lập tự viết bằng <code>useEffect</code>, hỗ trợ Debounce, Async check và Password toggle:
+              </Typography>
+            </Box>
 
-      {/* Section Q2: Todo List */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 700 }}>
-          Q2: Todo List
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Quản lý danh sách todo với useState (functional update), sửa inline (Enter: Lưu, Escape: Hủy), xóa.
-        </Typography>
-        <TodoList />
-      </Box>
-    </Container>
+            <Chip
+              icon={<LayersOutlinedIcon />}
+              label="8 Trường dữ liệu"
+              color="primary"
+              variant="outlined"
+              sx={{ fontWeight: 600, borderRadius: 2 }}
+            />
+          </Box>
+
+          {/* Form bố cục 2 cột gọn gàng, trực quan */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 2.5, sm: 3.5 },
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+                gap: { xs: 3, md: 4 },
+              }}
+            >
+              {/* Cột 1: Thông tin tài khoản & bảo mật */}
+              <Box>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: 'primary.main',
+                    mb: 2,
+                    pb: 1,
+                    borderBottom: '2px solid',
+                    borderColor: 'primary.light',
+                    display: 'inline-block',
+                  }}
+                >
+                  Nhóm 1: Tài khoản & Xác thực
+                </Typography>
+
+                <Stack spacing={2.5}>
+                  {/* 1. Email */}
+                  <ValidatedInput
+                    validate={validateEmail}
+                    label="1. Địa chỉ Email"
+                    placeholder="nhap.email@example.com"
+                    startIcon={<EmailOutlinedIcon fontSize="small" />}
+                  />
+
+                  {/* 2. Password */}
+                  <ValidatedInput
+                    type="password"
+                    validate={validatePassword}
+                    label="2. Mật khẩu"
+                    placeholder="≥ 8 ký tự, gồm hoa, thường, số, ký tự đặc biệt"
+                    onChange={setPassword}
+                    startIcon={<LockOutlinedIcon fontSize="small" />}
+                  />
+
+                  {/* 3. Confirm Password (phụ thuộc state password qua useCallback) */}
+                  <ValidatedInput
+                    type="password"
+                    validate={validateConfirmPassword}
+                    label="3. Xác nhận mật khẩu"
+                    placeholder="Nhập lại mật khẩu giống bên trên"
+                    startIcon={<VpnKeyOutlinedIcon fontSize="small" />}
+                  />
+
+                  {/* 4. Username (async check + debounce 500ms) */}
+                  <ValidatedInput
+                    validate={validateUsernameAsync}
+                    label="4. Tên đăng nhập (Async + Debounce 500ms)"
+                    placeholder="Thử gõ: admin, root, test để thấy báo trùng"
+                    debounceMs={500}
+                    startIcon={<AccountCircleOutlinedIcon fontSize="small" />}
+                  />
+                </Stack>
+              </Box>
+
+              {/* Cột 2: Thông tin cá nhân & liên hệ */}
+              <Box>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: 'secondary.main',
+                    mb: 2,
+                    pb: 1,
+                    borderBottom: '2px solid',
+                    borderColor: 'secondary.light',
+                    display: 'inline-block',
+                  }}
+                >
+                  Nhóm 2: Thông tin bổ sung
+                </Typography>
+
+                <Stack spacing={2.5}>
+                  {/* 5. Số điện thoại VN */}
+                  <ValidatedInput
+                    validate={validatePhoneVN}
+                    label="5. Số điện thoại VN"
+                    placeholder="VD: 0912345678 hoặc +84912345678"
+                    startIcon={<PhoneOutlinedIcon fontSize="small" />}
+                  />
+
+                  {/* 6. Tuổi */}
+                  <ValidatedInput
+                    type="number"
+                    validate={validateAge}
+                    label="6. Tuổi"
+                    placeholder="Số nguyên từ 1 đến 150"
+                    startIcon={<CakeOutlinedIcon fontSize="small" />}
+                  />
+
+                  {/* 7. Website URL */}
+                  <ValidatedInput
+                    validate={validateUrl}
+                    label="7. Website / Portfolio URL"
+                    placeholder="https://example.com"
+                    startIcon={<LanguageOutlinedIcon fontSize="small" />}
+                  />
+
+                  {/* 8. Họ và tên */}
+                  <ValidatedInput
+                    validate={validateFullName}
+                    label="8. Họ và tên đầy đủ"
+                    placeholder="VD: Nguyễn Văn An (tối thiểu 2 từ)"
+                    startIcon={<BadgeOutlinedIcon fontSize="small" />}
+                  />
+                </Stack>
+              </Box>
+            </Box>
+          </Paper>
+        </Box>
+
+        <Divider sx={{ my: 6, borderColor: 'divider' }} />
+
+        {/* Section Q2: Todo List */}
+        <Box sx={{ mb: 4 }}>
+          <Box sx={{ mb: 2.5 }}>
+            <Typography variant="h5" component="h2" sx={{ fontWeight: 800, mb: 0.5 }}>
+              Q2: Todo List Task Manager
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Quản lý danh sách công việc thuần bằng <code>useState</code> với functional updates,
+              sửa trực tiếp inline (Enter: Lưu, Escape: Hủy) và xóa nhanh chóng.
+            </Typography>
+          </Box>
+
+          <TodoList />
+        </Box>
+      </Container>
+    </ThemeProvider>
   );
 }
 
