@@ -153,8 +153,12 @@ export default function ValidatedInput({
           borderRadius: 2,
           backgroundColor: '#ffffff',
           transition: 'all 0.2s ease-in-out',
-          '&:hover': {
+          '&:hover .MuiOutlinedInput-notchedOutline': {
             borderColor: 'primary.main',
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'primary.main',
+            borderWidth: '2px',
           },
           '&.Mui-focused': {
             boxShadow: (theme) => `0 0 0 3px ${theme.palette.primary.main}1F`,

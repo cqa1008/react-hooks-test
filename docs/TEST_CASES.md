@@ -94,12 +94,12 @@
 | # | Input | Kỳ vọng | Kết quả |
 |---|---|---|---|
 | 44 | `''` (rỗng) | Lỗi: Mật khẩu không được để trống | ✅ PASS |
-| 45 | `'Aa1!'` (< 8 ký tự) | Lỗi: Mật khẩu tối thiểu 8 ký tự | ✅ PASS |
-| 46 | `'abcdef1!'` (thiếu chữ hoa) | Lỗi: Mật khẩu cần ít nhất 1 chữ hoa | ✅ PASS |
-| 47 | `'ABCDEF1!'` (thiếu chữ thường) | Lỗi: Mật khẩu cần ít nhất 1 chữ thường | ✅ PASS |
-| 48 | `'Abcdefg!'` (thiếu số) | Lỗi: Mật khẩu cần ít nhất 1 chữ số | ✅ PASS |
-| 49 | `'Abcdef12'` (thiếu ký tự đặc biệt) | Lỗi: Mật khẩu cần ít nhất 1 ký tự đặc biệt | ✅ PASS |
-| 50 | `'StrongP@ss1'` (đủ điều kiện) | Hợp lệ | ✅ PASS |
+| 45 | `'Aa1'` (< 8 ký tự) | Lỗi: Mật khẩu tối thiểu 8 ký tự | ✅ PASS |
+| 46 | `'abcdef12'` (thiếu chữ hoa) | Lỗi: Mật khẩu cần ít nhất 1 chữ hoa | ✅ PASS |
+| 47 | `'ABCDEF12'` (thiếu chữ thường) | Lỗi: Mật khẩu cần ít nhất 1 chữ thường | ✅ PASS |
+| 48 | `'Abcdefgh'` (thiếu số) | Lỗi: Mật khẩu cần ít nhất 1 chữ số | ✅ PASS |
+| 49 | `'Abcdef12'` (hoa + thường + số, không cần ký tự đặc biệt) | Hợp lệ | ✅ PASS |
+| 50 | `'StrongPass1'` (đủ điều kiện) | Hợp lệ | ✅ PASS |
 
 ### B. `validateUsername` (#51-58)
 | # | Input | Kỳ vọng | Kết quả |
@@ -133,11 +133,11 @@
 | 69 | `''` (rỗng) | Lỗi: Tuổi không được để trống | ✅ PASS |
 | 70 | `'abc'` (không phải số) | Lỗi: Tuổi phải là số nguyên | ✅ PASS |
 | 71 | `'25.5'` (số thập phân) | Lỗi: Tuổi phải là số nguyên | ✅ PASS |
-| 72 | `'0'` (< 1) | Lỗi: Tuổi phải từ 1 đến 150 | ✅ PASS |
-| 73 | `'-5'` (số âm) | Lỗi: Tuổi phải từ 1 đến 150 | ✅ PASS |
-| 74 | `'151'` (> 150) | Lỗi: Tuổi phải từ 1 đến 150 | ✅ PASS |
-| 75 | `'1'` (biên dưới 1) | Hợp lệ | ✅ PASS |
-| 76 | `'150'` (biên trên 150) | Hợp lệ | ✅ PASS |
+| 72 | `'17'` (< 18) | Lỗi: Tuổi phải từ 18 đến 100 | ✅ PASS |
+| 73 | `'-5'` (số âm) | Lỗi: Tuổi phải từ 18 đến 100 | ✅ PASS |
+| 74 | `'101'` (> 100) | Lỗi: Tuổi phải từ 18 đến 100 | ✅ PASS |
+| 75 | `'18'` (biên dưới 18) | Hợp lệ | ✅ PASS |
+| 76 | `'100'` (biên trên 100) | Hợp lệ | ✅ PASS |
 | 77 | `'25'` (trong khoảng hợp lệ) | Hợp lệ | ✅ PASS |
 
 ### E. `validateUrl` (#78-83)

@@ -93,6 +93,37 @@ function App() {
         shape: {
           borderRadius: 12,
         },
+        components: {
+          MuiInputLabel: {
+            styleOverrides: {
+              root: {
+                color: '#334155', // Xám đậm hơn một bậc để tăng độ tương phản
+                fontWeight: 500,
+                '&.Mui-focused': {
+                  color: '#4f46e5',
+                },
+              },
+            },
+          },
+          MuiOutlinedInput: {
+            styleOverrides: {
+              root: {
+                '& input::placeholder': {
+                  color: '#475569', // Xám đậm hơn cho placeholder
+                  opacity: 0.85,
+                },
+                // Đổi viền focus của mọi TextField sang primary color
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#4f46e5',
+                  borderWidth: '2px',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#4f46e5',
+                },
+              },
+            },
+          },
+        },
       }),
     []
   );
@@ -160,7 +191,7 @@ function App() {
             />
           </Box>
 
-          {/* Form bố cục 2 cột gọn gàng, trực quan */}
+          {/* Form bố cục 2 cột gọn gàng: responsive dưới 900px tự động xếp thành 1 cột */}
           <Paper
             elevation={0}
             sx={{
@@ -190,7 +221,7 @@ function App() {
                     mb: 2,
                     pb: 1,
                     borderBottom: '2px solid',
-                    borderColor: 'primary.light',
+                    borderColor: 'primary.main',
                     display: 'inline-block',
                   }}
                 >
@@ -211,7 +242,7 @@ function App() {
                     type="password"
                     validate={validatePassword}
                     label="2. Mật khẩu"
-                    placeholder="≥ 8 ký tự, gồm hoa, thường, số, ký tự đặc biệt"
+                    placeholder="≥ 8 ký tự, gồm chữ hoa, thường và số"
                     onChange={setPassword}
                     startIcon={<LockOutlinedIcon fontSize="small" />}
                   />
@@ -244,11 +275,11 @@ function App() {
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
-                    color: 'secondary.main',
+                    color: 'primary.main',
                     mb: 2,
                     pb: 1,
                     borderBottom: '2px solid',
-                    borderColor: 'secondary.light',
+                    borderColor: 'primary.main',
                     display: 'inline-block',
                   }}
                 >
@@ -269,7 +300,7 @@ function App() {
                     type="number"
                     validate={validateAge}
                     label="6. Tuổi"
-                    placeholder="Số nguyên từ 1 đến 150"
+                    placeholder="Số nguyên từ 18 đến 100"
                     startIcon={<CakeOutlinedIcon fontSize="small" />}
                   />
 

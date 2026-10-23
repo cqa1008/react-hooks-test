@@ -11,14 +11,13 @@ export const validateEmail = (value) => {
   return '';
 };
 
-/** Validate mật khẩu: ≥8 ký tự, có hoa + thường + số + ký tự đặc biệt */
+/** Validate mật khẩu: ≥8 ký tự, có hoa + thường + số */
 export const validatePassword = (value) => {
   if (!value) return 'Mật khẩu không được để trống';
   if (value.length < 8) return 'Mật khẩu tối thiểu 8 ký tự';
   if (!/[A-Z]/.test(value)) return 'Mật khẩu cần ít nhất 1 chữ hoa';
   if (!/[a-z]/.test(value)) return 'Mật khẩu cần ít nhất 1 chữ thường';
   if (!/\d/.test(value)) return 'Mật khẩu cần ít nhất 1 chữ số';
-  if (!/[^A-Za-z0-9]/.test(value)) return 'Mật khẩu cần ít nhất 1 ký tự đặc biệt';
   return '';
 };
 
@@ -41,12 +40,12 @@ export const validatePhoneVN = (value) => {
   return '';
 };
 
-/** Validate tuổi: số nguyên 1-150 */
+/** Validate tuổi: số nguyên từ 18 đến 100 */
 export const validateAge = (value) => {
   if (!value.trim()) return 'Tuổi không được để trống';
   const n = Number(value);
   if (isNaN(n) || !Number.isInteger(n)) return 'Tuổi phải là số nguyên';
-  if (n < 1 || n > 150) return 'Tuổi phải từ 1 đến 150';
+  if (n < 18 || n > 100) return 'Tuổi phải từ 18 đến 100';
   return '';
 };
 
