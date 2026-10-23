@@ -125,53 +125,8 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
-      {/* Hero Header Banner */}
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
-          color: '#ffffff',
-          py: { xs: 4, md: 5 },
-          px: 2,
-          mb: 4,
-          boxShadow: '0 10px 25px -5px rgba(49, 46, 129, 0.3)',
-        }}
-      >
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
-            <Chip
-              label="React 19"
-              size="small"
-              sx={{ bgcolor: 'rgba(255, 255, 255, 0.15)', color: '#fff', fontWeight: 600 }}
-            />
-            <Chip
-              label="Vite"
-              size="small"
-              sx={{ bgcolor: 'rgba(255, 255, 255, 0.15)', color: '#fff', fontWeight: 600 }}
-            />
-            <Chip
-              label="MUI Material"
-              size="small"
-              sx={{ bgcolor: 'rgba(255, 255, 255, 0.15)', color: '#fff', fontWeight: 600 }}
-            />
-            <Chip
-              label="Pure Hooks: useState & useEffect"
-              size="small"
-              sx={{ bgcolor: '#10b981', color: '#fff', fontWeight: 600 }}
-            />
-          </Box>
-
-          <Typography variant="h4" component="h1" sx={{ color: '#fff', mb: 1 }}>
-            React Hooks Validation & State Lab
-          </Typography>
-          <Typography variant="body1" sx={{ color: '#cbd5e1', maxWidth: 780, fontSize: '1rem' }}>
-            Khám phá cơ chế thực thi của <code>useEffect</code> (dependency array, cleanup race condition),
-            <code>useCallback</code> chống stale closure, và <code>useState</code> functional updates.
-          </Typography>
-        </Container>
-      </Box>
-
       {/* Main Container */}
-      <Container maxWidth="lg" sx={{ pb: 8 }}>
+      <Container maxWidth="lg" sx={{ pt: { xs: 3, md: 4 }, pb: 8 }}>
         {/* Section Q1: Form Validation với useEffect */}
         <Box sx={{ mb: 6 }}>
           <Box
@@ -187,7 +142,7 @@ function App() {
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, mb: 0.5 }}>
                 <VerifiedUserOutlinedIcon color="primary" sx={{ fontSize: 30 }} />
-                <Typography variant="h5" component="h2" sx={{ fontWeight: 800 }}>
+                <Typography variant="h5" component="h1" sx={{ fontWeight: 800 }}>
                   Q1: Form Input Validation với useEffect()
                 </Typography>
               </Box>
